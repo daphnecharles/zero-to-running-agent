@@ -15,7 +15,10 @@ from agent.graph import build_graph
 def show_results(state: dict) -> None:
     print("\nRanked opportunities")
     for fit in state.get("scores", []):
-        print(f"  {fit['topic_fit']:>2}/10  {fit['route']:<12} {fit['cfp_name']}  (closes {fit['cfp_deadline']})")
+        # route and cfp_deadline only exist once Check and Decide are built
+        route = fit.get("route", "-")
+        closes = f"  (closes {fit['cfp_deadline']})" if "cfp_deadline" in fit else ""
+        print(f"  {fit['topic_fit']:>2}/10  {route:<12} {fit['cfp_name']}{closes}")
     for r in state.get("rejected", []):
         print(f"  rejected     {r['cfp_name']}  ({r['why']})")
 
