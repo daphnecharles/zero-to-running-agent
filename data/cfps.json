@@ -1,0 +1,156 @@
+{
+  "source": "https://github.com/tech-conferences/conference-data (confs.tech)",
+  "snapshot_date": "2026-10-07",
+  "open_as_of": "2026-10-19",
+  "cfps": [
+    {
+      "id": "voxxed-days-z-rich-2027",
+      "name": "Voxxed Days Z\u00fcrich",
+      "url": "https://vdz27.voxxeddays.ch",
+      "cfp_url": "https://vdz27.cfp.dev/#/login",
+      "cfp_deadline": "2026-10-23",
+      "start_date": "2027-03-09",
+      "location": "Zurich, Switzerland",
+      "topics": [
+        "general"
+      ]
+    },
+    {
+      "id": "build-it-summit-2026",
+      "name": "Build It Summit",
+      "url": "https://builditsummit.com",
+      "cfp_url": "https://builditsummit.com/call-for-speakers",
+      "cfp_deadline": "2026-10-31",
+      "start_date": "2026-12-01",
+      "location": "Paris, France",
+      "topics": [
+        "devops",
+        "data",
+        "opensource"
+      ]
+    },
+    {
+      "id": "java-day-istanbul-2027",
+      "name": "Java Day Istanbul",
+      "url": "https://www.javaday.istanbul",
+      "cfp_url": "https://bilgi711.wixforms.com/f/7479128754174821378",
+      "cfp_deadline": "2026-10-31",
+      "start_date": "2027-04-17",
+      "location": "Istanbul, Turkey",
+      "topics": [
+        "data",
+        "opensource",
+        "java"
+      ]
+    },
+    {
+      "id": "digital-crafts-day-2027",
+      "name": "Digital Crafts Day",
+      "url": "https://dc-nordoberpfalz.de/DigitalCraftsDay/2027",
+      "cfp_url": "https://sessionize.com/digital-crafts-day-2027",
+      "cfp_deadline": "2026-10-31",
+      "start_date": "2027-04-16",
+      "location": "Weiden, Germany",
+      "topics": [
+        "general"
+      ]
+    },
+    {
+      "id": "ai-conf-asia-2027",
+      "name": "AI Conf Asia",
+      "url": "https://aiconf.asia",
+      "cfp_url": "https://aiconf.asia/2027/#cfs",
+      "cfp_deadline": "2026-11-01",
+      "start_date": "2027-01-09",
+      "location": "Kathmandu, Nepal",
+      "topics": [
+        "data"
+      ]
+    },
+    {
+      "id": "scale-2027",
+      "name": "SCaLE",
+      "url": "https://www.socallinuxexpo.org/scale/24x",
+      "cfp_url": "https://www.socallinuxexpo.org/scale/24x/cfp",
+      "cfp_deadline": "2026-11-01",
+      "start_date": "2027-04-01",
+      "location": "Pasadena, CA, U.S.A.",
+      "topics": [
+        "opensource"
+      ]
+    },
+    {
+      "id": "inted-2027",
+      "name": "INTED",
+      "url": "https://iated.org/inted",
+      "cfp_url": "https://iated.org/inted/call_for_abstracts",
+      "cfp_deadline": "2026-11-19",
+      "start_date": "2027-03-09",
+      "location": "Online",
+      "topics": [
+        "general"
+      ]
+    },
+    {
+      "id": "big-data-europe-2026",
+      "name": "Big Data Europe",
+      "url": "https://bigdataconference.eu",
+      "cfp_url": "https://airtable.com/appsUlpNtLMccgwFZ/pagviP3ooRV63PCWO/form",
+      "cfp_deadline": "2026-11-23",
+      "start_date": "2026-11-24",
+      "location": "Online",
+      "topics": [
+        "data"
+      ]
+    },
+    {
+      "id": "uxlx-user-experience-lisbon-2027",
+      "name": "UXLx: User Experience Lisbon",
+      "url": "https://ux-lx.com",
+      "cfp_url": "https://forms.gle/ENdFQCoPAPskrpFG8",
+      "cfp_deadline": "2026-11-30",
+      "start_date": "2027-05-11",
+      "location": "Lisbon, Portugal",
+      "topics": [
+        "ux"
+      ]
+    },
+    {
+      "id": "ai-con-usa-2027",
+      "name": "AI Con USA",
+      "url": "https://aiconusa.techwell.com",
+      "cfp_url": "https://aiconusa.techwell.com/speak-ai-con-usa",
+      "cfp_deadline": "2026-10-18",
+      "start_date": "2027-06-06",
+      "location": "Online",
+      "topics": [
+        "data"
+      ]
+    },
+    {
+      "id": "global-summit-on-data-science-and-cloud-computing-2026",
+      "name": "Global Summit on Data Science and Cloud Computing",
+      "url": "https://datascience.novelticsconferences.com",
+      "cfp_url": "https://datascience.novelticsconferences.com/register",
+      "cfp_deadline": "2026-10-15",
+      "start_date": "2026-10-19",
+      "location": "Rome, Italy",
+      "topics": [
+        "python",
+        "data"
+      ]
+    },
+    {
+      "id": "genaix-global-generative-agentic-ai-summit-2027",
+      "name": "GENAIX: Global Generative & Agentic AI Summit",
+      "url": "https://genaixworld.com",
+      "cfp_url": "https://www.cfp.net",
+      "cfp_deadline": "2026-10-15",
+      "start_date": "2027-04-15",
+      "location": "Singapore, Singapore",
+      "topics": [
+        "general"
+      ]
+    }
+  ]
+}
