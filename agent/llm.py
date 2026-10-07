@@ -1,4 +1,5 @@
 """One place to switch models. Every node calls get_llm() and never imports a provider directly."""
+import logging
 import re
 import time
 
@@ -11,6 +12,8 @@ def _patient_gemini():
     """Gemini whose free tier says 'slow down' (429). Wait as long as Google asks, then try again."""
     from langchain_google_genai import ChatGoogleGenerativeAI
     from langchain_google_genai.chat_models import GoogleRateLimitError
+
+    logging.getLogger("google_genai.models").setLevel(logging.ERROR)  # hide a harmless AFC notice
 
     class PatientGemini(ChatGoogleGenerativeAI):
         def _generate(self, *args, **kwargs):
