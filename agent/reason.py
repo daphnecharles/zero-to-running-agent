@@ -101,7 +101,7 @@ def reason_node(state: AgentState) -> dict:
 
     # Step 2. Ask for the answer as structured data, in one call.
     messages.append(HumanMessage("Now return your scores for every CFP."))
-    batch = llm.with_structured_output(FitBatch).invoke(messages)
+    batch = llm.with_structured_output(FitBatch, method="json_schema").invoke(messages)
     fits = [fit.model_dump() for fit in batch.fits]
     log_event(state["run_id"], "reason", "scored", mode=config.MODEL_PROVIDER, count=len(fits))
     return {"scores": fits}
