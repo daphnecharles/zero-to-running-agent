@@ -4,6 +4,7 @@
     python run.py https://github.com/owner/repo     # uses your project's README
     python run.py data/injected_readme.md           # the prompt injection example
 """
+import os
 import sys
 import uuid
 
@@ -12,9 +13,24 @@ from langgraph.types import Command
 from agent.graph import build_graph
 
 
+def show_gathered(state: dict) -> None:
+    """Before Reason exists, all we have is what Gather collected."""
+    profile = state.get("profile", {})
+    print(f"\nYour project: {profile.get('name')}")
+    print(f"  topics: {', '.join(profile.get('topics', [])) or 'none found'}")
+    print(f"  read from: {os.path.relpath(profile['source']) if os.path.isabs(profile.get('source', '')) else profile.get('source')}")
+    cfps = state.get("opportunities", [])
+    print(f"\nOpen CFPs ({len(cfps)})")
+    for cfp in cfps:
+        print(f"  closes {cfp['cfp_deadline']}  {cfp['name']}  ({cfp['location']})")
+
+
 def show_results(state: dict) -> None:
+    if not state.get("scores"):
+        show_gathered(state)
+        return
     print("\nRanked opportunities")
-    for fit in state.get("scores", []):
+    for fit in state["scores"]:
         # route and cfp_deadline only exist once Check and Decide are built
         route = fit.get("route", "-")
         closes = f"  (closes {fit['cfp_deadline']})" if "cfp_deadline" in fit else ""

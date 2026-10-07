@@ -64,15 +64,13 @@ def mock_fits(state: AgentState) -> list[dict]:
 
 def reason_node(state: AgentState) -> dict:
     llm = get_llm()
-    if llm is None:
-        fits = mock_fits(state)
-        log_event(state["run_id"], "reason", "scored", mode="mock", count=len(fits))
-        return {"scores": fits}
 
     # TODO 3. Write the Reason node.
-    #   a. Bind the tools to the model and loop (at most 2 rounds), running any tool calls
-    #      and appending ToolMessages.
-    #   b. Ask for the answer with llm.with_structured_output(FitBatch).
-    #   c. Return {"scores": [fit.model_dump() for fit in batch.fits]}.
-    print("Reason isn't built yet. That's Build 1. Set MODEL_PROVIDER=mock to see the mock version.")
+    #   a. In mock mode llm is None. Score with mock_fits(state), log it with log_event,
+    #      and return {"scores": fits}. This keeps the workshop running with no API key.
+    #   b. Otherwise bind the tools to the model and loop (at most 2 rounds), running any
+    #      tool calls and appending ToolMessages.
+    #   c. Ask for the answer with llm.with_structured_output(FitBatch).
+    #   d. Return {"scores": [fit.model_dump() for fit in batch.fits]}.
+    print("Reason isn't built yet. That's Build 1.")
     return {"scores": []}
