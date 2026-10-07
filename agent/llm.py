@@ -15,4 +15,4 @@ def get_llm() -> BaseChatModel | None:
         return ChatGoogleGenerativeAI(model=config.GEMINI_MODEL, temperature=0, max_retries=4)
     from langchain_anthropic import ChatAnthropic
 
-    return ChatAnthropic(model=config.CLAUDE_MODEL, temperature=0, max_retries=4, max_tokens=4096)
+    return ChatAnthropic(model=config.CLAUDE_MODEL, max_retries=4, max_tokens=4096)
