@@ -12,7 +12,7 @@ def get_llm() -> BaseChatModel | None:
         from langchain_google_genai import ChatGoogleGenerativeAI
 
         # The free tier allows about 15 requests a minute, so retry with backoff on 429s.
-        return ChatGoogleGenerativeAI(model=config.GEMINI_MODEL, temperature=0, max_retries=4)
+        return ChatGoogleGenerativeAI(model=config.GEMINI_MODEL, max_retries=4)
     from langchain_anthropic import ChatAnthropic
 
     return ChatAnthropic(model=config.CLAUDE_MODEL, max_retries=4, max_tokens=4096)
