@@ -39,7 +39,7 @@ def draft_node(state: AgentState) -> dict:
                 f"Conference: {fit['cfp_name']} ({fit['format']}, {fit['audience_level']} audience)\n"
                 f"Why it fits: {fit['reason']}\n\n<project>\n{profile['summary']}\n</project>"
             )
-            draft = llm.with_structured_output(Draft).invoke([SystemMessage(SYSTEM), HumanMessage(prompt)])
+            draft = llm.with_structured_output(Draft, method="json_schema").invoke([SystemMessage(SYSTEM), HumanMessage(prompt)])
         drafts.append({
             "cfp_id": fit["cfp_id"], "cfp_name": fit["cfp_name"], "cfp_url": fit["cfp_url"],
             "cfp_deadline": fit["cfp_deadline"], **draft.model_dump(), "status": "waiting_for_approval",
