@@ -2,11 +2,13 @@
 
 Three exercises turn this repo from "Gather only" into the finished agent. Each one gives you a few stub files with `TODO` comments. Every `TODO` points back to a numbered step in this file, for example `# TODO 2 (see EXERCISES.md, Exercise 1, step 2)`.
 
-| Exercise | What you build | Time box | Files | Catch-up branch |
+| Exercise | What you build | Hands-on time | Files | Catch-up branch |
 |---|---|---|---|---|
-| 1. Reason | Tools and a schema so the model scores every CFP | 22 minutes | `agent/reason.py` | `step-1` |
-| 2. Check and Decide | A plain-code gate and routing | 22 minutes | `agent/check.py`, `agent/decide.py` | `step-2` |
-| 3. Act and ship | Drafting, the human pause and the API | 18 minutes | `agent/act.py`, `main.py` | `step-3` |
+| 1. Reason | Tools and a schema so the model scores every CFP | 20 minutes | `agent/reason.py` | `step-1` |
+| 2. Check and Decide | A plain-code gate and routing | 15 minutes | `agent/check.py`, `agent/decide.py` | `step-2` |
+| 3. Act and ship | Drafting, the human pause and the API | 20 minutes | `agent/act.py`, `main.py` | `step-3` |
+
+The times are hands-on minutes only. They cover your own typing and running, not the talk and walkthrough around each exercise.
 
 You are not meant to finish every step perfectly. If the timer runs out, use the catch-up command and keep going. Nobody gets left behind.
 
@@ -24,7 +26,7 @@ You are not meant to finish every step perfectly. If the timer runs out, use the
 
 ---
 
-## Exercise 1. Reason (22 minutes)
+## Exercise 1. Reason (20 minutes hands-on)
 
 **Goal.** Give the model two tools to read the facts Gather collected, and a schema to answer in, so the next stage gets scores it can use instead of a paragraph.
 
@@ -160,7 +162,7 @@ Not sure what a `TODO` wants? Ask Claude Code. For example, "Explain TODO 3 in a
 
 ---
 
-## Exercise 2. Check and Decide (22 minutes)
+## Exercise 2. Check and Decide (15 minutes hands-on)
 
 **Goal.** Write a gate made of plain code that rejects invented, unreachable and closed conferences, then route what is left into apply now, maybe later or skip.
 
@@ -307,7 +309,7 @@ Ask Claude Code, for example "Explain TODO 2 in agent/check.py and why is_real r
 
 ---
 
-## Exercise 3. Act and ship (18 minutes)
+## Exercise 3. Act and ship (20 minutes hands-on)
 
 **Goal.** Draft a proposal for each apply now conference, pause for a human to approve, edit or reject, save only what they approve, then put the whole agent behind a web API.
 
