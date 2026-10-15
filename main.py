@@ -11,7 +11,7 @@ from pydantic import BaseModel
 
 from agent.graph import build_graph
 
-app = FastAPI(title="From Zero to Running Agent")
+app = FastAPI(title="Mic Check")
 graph = build_graph()  # in-memory checkpoints, so runs live as long as the server does
 
 
