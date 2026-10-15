@@ -6,7 +6,7 @@ Three exercises turn this repo from "Gather only" into the finished agent. Each 
 |---|---|---|---|---|
 | 1. Reason | Tools and a schema so the model scores every CFP | 20 minutes | `agent/reason.py` | `step-1` |
 | 2. Check and Decide | A plain-code gate and routing | 15 minutes | `agent/check.py`, `agent/decide.py` | `step-2` |
-| 3. Act and ship | Drafting, the human pause and the API | 20 minutes | `agent/act.py`, `main.py` | `step-3` |
+| 3. Act and ship | Drafting and the human pause | 20 minutes | `agent/act.py` | `step-3` |
 
 The times are hands-on minutes only. They cover your own typing and running, not the talk and walkthrough around each exercise.
 
@@ -27,6 +27,8 @@ You are not meant to finish every step perfectly. If the timer runs out, use the
 ---
 
 ## Exercise 1. Reason (20 minutes hands-on)
+
+**Done when.** `python run.py` shows a score for every conference.
 
 **Goal.** Give the model two tools to read the facts Gather collected, and a schema to answer in, so the next stage gets scores it can use instead of a paragraph.
 
@@ -107,7 +109,7 @@ Expected output in mock mode.
 [gather] profile_built (project=pgsnap)
 [gather] cfps_loaded (count=12, snapshot=2026-10-07)
 [reason] scored (mode=mock, count=12)
-Check isn't built yet. That's Build 2.
+Check isn't built yet. That's Exercise 2.
 
 Ranked opportunities
    2/10  -            Voxxed Days Zürich
@@ -139,7 +141,7 @@ The scores will differ from the mock ones. They come from a model reading the RE
 
 | You see | What it means | Fix |
 |---|---|---|
-| `Reason isn't built yet. That's Build 1.` still prints, and no ranking appears | The stub is still in place | Delete the `print` and placeholder `return`. In mock mode, finish step 3a |
+| `Reason isn't built yet. That's Exercise 1.` still prints, and no ranking appears | The stub is still in place | Delete the `print` and placeholder `return`. In mock mode, finish step 3a |
 | `MODEL_PROVIDER is claude but ANTHROPIC_API_KEY isn't set` (or `GOOGLE_API_KEY` for Gemini) from `setup_check.py` | Your key is missing from `.env` | Open `.env`, paste the key after the `=` with no quotes, save, run `python scripts/setup_check.py` again. No key yet? Set `MODEL_PROVIDER=mock` |
 | `This API key is not scoped to a workspace` | A Claude key created outside a workspace | In the Claude Console, create the key inside a workspace and replace it in `.env` |
 | `429 RESOURCE_EXHAUSTED` from Gemini | The free tier allows about 15 requests per minute | The repo waits and retries by itself (`Gemini free tier is rate limited, waiting...`). If it still fails, wait a minute and avoid running back to back. A full run uses 4 to 6 requests |
@@ -160,9 +162,21 @@ This saves your edits out of the way and switches you to a branch where Exercise
 
 Not sure what a `TODO` wants? Ask Claude Code. For example, "Explain TODO 3 in agent/reason.py and what it should return". Ask it to explain, not to write the answer, and you will learn more.
 
+### Stretch goal (for early finishers)
+
+Add a third tool, `get_cfp_details(cfp_id)`, that returns one CFP from `state["opportunities"]` as JSON text. If the id is not found, return a short error message as JSON instead of crashing. Add it to the list that `make_tools` returns, then run the check from step 1 again. You should see three names.
+
+```text
+['get_project_profile', 'list_open_cfps', 'get_cfp_details']
+```
+
+With a real model, the model decides whether it needs the tool. You can nudge it by telling it, in your step 3b message, that it may look up any CFP by id.
+
 ---
 
 ## Exercise 2. Check and Decide (15 minutes hands-on)
+
+**Done when.** `pytest` shows `6 passed`, and `LET_MODEL_SUGGEST=true python run.py` shows the gate rejecting AgentCon Atlantis 2026.
 
 **Goal.** Write a gate made of plain code that rejects invented, unreachable and closed conferences, then route what is left into apply now, maybe later or skip.
 
@@ -233,7 +247,7 @@ Expected output in mock mode.
 [check] rejected (cfp=GENAIX: Global Generative & Agentic AI Summit, why=deadline passed on 2026-10-15)
 [check] done (passed=9, rejected=3)
 [decide] routed (apply_now=2, maybe_later=3, skip=4)
-Act isn't built yet. That's Build 3.
+Act isn't built yet. That's Exercise 3.
 
 Ranked opportunities
   10/10  apply_now    Build It Summit  (closes 2026-10-31)
@@ -307,11 +321,34 @@ git stash && git checkout step-2
 
 Ask Claude Code, for example "Explain TODO 2 in agent/check.py and why is_real runs first". Or paste a failing `pytest` message and ask what it means before you ask for a fix.
 
+### Stretch goal (for early finishers)
+
+Add a fourth check to the gate. Reject a CFP when the conference itself has already started. Each CFP in `data/cfps.json` has a `start_date` such as `"2027-03-09"`, and a few may be missing it, so treat a missing date as fine.
+
+```python
+def starts_in_future(start_date: str | None, today: date) -> bool:
+    ...
+```
+
+Call it from `check_node` **before** the deadline check, with a reason of your own such as `conference already started on <date>`. Why before? A deadline always passes before the event starts, so if the deadline check came first it would catch every CFP and you would never see your new reason. Add a test to `tests/test_check_decide.py` too. Then rehearse a day when one conference has started.
+
+```bash
+TODAY=2026-10-20 python run.py
+```
+
+Look for the Global Summit on Data Science and Cloud Computing, which started on 2026-10-19. Your wording will differ.
+
+```text
+[check] rejected (cfp=Global Summit on Data Science and Cloud Computing, why=conference already started on 2026-10-19)
+```
+
 ---
 
 ## Exercise 3. Act and ship (20 minutes hands-on)
 
-**Goal.** Draft a proposal for each apply now conference, pause for a human to approve, edit or reject, save only what they approve, then put the whole agent behind a web API.
+**Done when.** A draft waits for your approval, and the one you approve is saved in `outputs/`.
+
+**Goal.** Draft a proposal for each apply now conference, pause for a human to approve, edit or reject, and save only what they approve. If you have time, try the web API that wraps the whole agent.
 
 **Start from.** Your finished Exercise 2, or `git stash && git checkout step-2`.
 
@@ -425,7 +462,7 @@ tail -n 3 logs/runs.jsonl
 {"time": "2026-10-15T18:27:51+00:00", "run_id": "80a9b6ba", "stage": "act", "event": "saved", "approved": 2, "path": "/Users/you/zero-to-running-agent/outputs/approved_80a9b6ba.md"}
 ```
 
-### Put it behind the API
+### If you have time. Put it behind the API
 
 `main.py` is the agent's own web API, built with FastAPI. It runs the same graph you just ran in the terminal, but over HTTP, so other programs can start runs and review drafts. FastAPI also builds a page where you can try every endpoint from your browser.
 
@@ -496,7 +533,7 @@ Try sending the same review a second time. You should get a `409` with `This run
 
 Runs live in the server's memory. If the server restarts (including when `--reload` notices you saved a file), old run IDs are forgotten. Start a new run.
 
-### Finish by running it on your own repo
+### If you have time. Finish by running it on your own repo
 
 Point the agent at a public GitHub project of yours. This reads the README from `raw.githubusercontent.com`.
 
@@ -517,7 +554,7 @@ You can do the same through the API by putting your URL in `repo_url` in `POST /
 | You see | What it means | Fix |
 |---|---|---|
 | `EOFError: EOF when reading a line` | `run.py` has no terminal to ask you questions in | Run it in an interactive terminal, not piped or in the background |
-| `Act isn't built yet. That's Build 3.` still prints, and no draft prompt appears | The stub is still in place | Finish step 1 and delete the `print` and the placeholder `return` |
+| `Act isn't built yet. That's Exercise 3.` still prints, and no draft prompt appears | The stub is still in place | Finish step 1 and delete the `print` and the placeholder `return` |
 | The run finishes without ever asking you | `review_node` is not calling `interrupt(...)` | Finish step 2 |
 | A `422` response from `/review` | The body is not a list of decisions | Send `[ {...}, {...} ]`, with each item holding `cfp_id` and `action` |
 | `409` `This run isn't waiting for review` | The run already finished, or the server restarted | Start a new run with `POST /runs` |
@@ -537,6 +574,20 @@ This is the finished agent.
 ### Tip
 
 Ask Claude Code, for example "Explain TODO 2 in agent/act.py and what happens to the graph when interrupt is called". It is also good at explaining `main.py` line by line.
+
+### Stretch goal (for early finishers)
+
+Put the CFP deadline into each draft's title, so a reviewer sees it at a glance. After you build a draft's dict in `draft_node`, add the deadline to its title.
+
+```python
+drafts[-1]["title"] += f" ..."   # which fit field holds the deadline?
+```
+
+Run `python run.py` again. In mock mode each draft heading should now look like this, and the approved file in `outputs/` shows the same title.
+
+```text
+Shipping pgsnap: lessons for Build It Summit (submit by 2026-10-31)
+```
 
 ---
 

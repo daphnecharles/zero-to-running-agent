@@ -1,6 +1,6 @@
 """Reason. The model reads the gathered facts and fills in a schema for every CFP.
 
-Build 1 in the workshop.
+Exercise 1 in the workshop.
 """
 import json
 from typing import Literal
