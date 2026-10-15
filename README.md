@@ -1,6 +1,6 @@
 # From Zero to Running Agent
 
-The starter repo for the All Things Open 2026 deep dive. You'll build an agent that reads your GitHub project, finds conference CFPs that fit it, checks them, ranks them, and drafts a proposal that waits for your approval.
+The starter repo for the All Things Open 2026 deep dive. You'll build Mic Check, an agent that reads your GitHub project, finds conference CFPs (a CFP is a call for proposals, where a conference invites people to apply to speak) that fit it, checks them, ranks them, and drafts a proposal that waits for your approval.
 
 It's a simplified version of the architecture behind the [Sparx Growth Engine](https://github.com/daphnecharles/sparx-growth-engine), built with LangGraph, LangChain, FastAPI and Claude.
 
