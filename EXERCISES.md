@@ -1,6 +1,6 @@
 # Exercises
 
-Three exercises turn this repo from "Gather only" into the finished agent. Each one gives you a few stub files with `TODO` comments. Every `TODO` points back to a numbered step in this file, for example `# TODO 2 (see EXERCISES.md, Exercise 1, step 2)`.
+Three exercises turn this repo from "Gather only" into Mic Check, the finished agent. Each one gives you a few stub files with `TODO` comments. Every `TODO` points back to a numbered step in this file, for example `# TODO 2 (see EXERCISES.md, Exercise 1, step 2)`.
 
 | Exercise | What you build | Hands-on time | Files | Catch-up branch |
 |---|---|---|---|---|
