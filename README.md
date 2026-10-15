@@ -6,6 +6,8 @@ It's a simplified version of the architecture behind the [Sparx Growth Engine](h
 
 ## Before the workshop
 
+macOS or Linux
+
 ```bash
 git clone https://github.com/daphnecharles/zero-to-running-agent
 cd zero-to-running-agent
@@ -15,7 +17,21 @@ cp .env.example .env
 python scripts/setup_check.py
 ```
 
-You should see `READY`. If your local Python setup fights you, open the repo in GitHub Codespaces instead. The dev container installs everything for you.
+Windows (Command Prompt or PowerShell)
+
+```bat
+git clone https://github.com/daphnecharles/zero-to-running-agent
+cd zero-to-running-agent
+python -m venv .venv
+.venv\Scripts\activate
+pip install -r requirements.txt
+copy .env.example .env
+python scripts/setup_check.py
+```
+
+You should see `READY`. If your local Python setup fights you, [open the repo in GitHub Codespaces](https://codespaces.new/daphnecharles/zero-to-running-agent) instead. The dev container installs everything for you.
+
+Cloned before October 18? Run `git pull`.
 
 ## Pick your model
 
@@ -64,9 +80,11 @@ The agent never submits anything. Approved drafts are saved to `outputs/` for yo
 | Branch | What's done |
 |---|---|
 | `main` | Gather. Where the workshop starts |
-| `step-1` | + Reason (end of Build 1) |
-| `step-2` | + Check and Decide (end of Build 2) |
+| `step-1` | + Reason (end of Exercise 1) |
+| `step-2` | + Check and Decide (end of Exercise 2) |
 | `step-3` | + Act and the API. The finished agent |
+
+`step-N` means Exercise N is finished.
 
 Fallen behind? `git stash && git checkout step-N` and keep going.
 
