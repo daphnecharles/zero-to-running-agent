@@ -1,6 +1,6 @@
 """Act. Draft proposals, then stop and wait for a human.
 
-Build 3 in the workshop. Nothing here submits anywhere. Approved drafts are
+Exercise 3 in the workshop. Nothing here submits anywhere. Approved drafts are
 saved to outputs/ for you to submit yourself.
 """
 from langchain_core.messages import HumanMessage, SystemMessage
