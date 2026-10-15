@@ -35,6 +35,14 @@ python run.py https://github.com/you/your-repo # your own project
 uvicorn main:app --reload                      # the API, then open localhost:8000/docs
 ```
 
+`main.py` is the agent's own web API, built with FastAPI. Start it with the `uvicorn` command, then open [localhost:8000/docs](http://localhost:8000/docs). That page lists every endpoint and lets you start a run, read the drafts and approve or reject them from your browser.
+
+## Exercises
+
+New to this? Work through [EXERCISES.md](EXERCISES.md). It has three guided exercises, one per build, with a time box, the files to open, numbered steps that match the `TODO` comments in the code, the output you should see, common errors and a catch-up command.
+
+Run `pytest` any time. The Check and Decide tests fail on `main` and `step-1` until you finish Exercise 2, and pass on `step-2` and `step-3`.
+
 ## How it works
 
 Five stages, each with one job.
@@ -64,7 +72,6 @@ Fallen behind? `git stash && git checkout step-N` and keep going.
 
 ## Try these
 
-- **Watch the gate work.** Set `LET_MODEL_SUGGEST=true` and the model suggests conferences from memory. Check rejects the ones that don't exist.
 - **Prompt injection.** Run `python run.py data/injected_readme.md`. That README hides instructions aimed at the model. See whether they change anything, and notice which stages couldn't be fooled either way.
 - **Rehearse another day.** `TODAY=2026-11-02 python run.py` shows what the gate does once more deadlines pass.
 
