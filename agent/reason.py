@@ -1,6 +1,6 @@
 """Reason. The model reads the gathered facts and fills in a schema for every CFP.
 
-BUILD 1. Follow the TODOs. Stuck? git stash && git checkout step-1
+BUILD 1 (Exercise 1 in EXERCISES.md). Follow the TODOs. Stuck? git stash && git checkout step-1
 """
 import json
 from typing import Literal
@@ -16,7 +16,8 @@ from agent.state import AgentState
 
 
 class CFPFit(BaseModel):
-    # TODO 2. Add the fit schema. Fields cfp_id, cfp_name, topic_fit (0 to 10),
+    # TODO 2 (see EXERCISES.md, Exercise 1, step 2). Add the fit schema.
+    # Fields cfp_id, cfp_name, topic_fit (0 to 10),
     # audience_level ("beginner", "mid", "advanced"), format ("talk", "workshop", "lightning"), reason.
     pass
 
@@ -37,7 +38,7 @@ using a new slug as cfp_id."""
 
 def make_tools(state: AgentState):
     """Wrap the gathered data as tools. The docstring is the prompt the model reads."""
-    # TODO 1. Write two @tool functions, get_project_profile() and list_open_cfps(),
+    # TODO 1 (see EXERCISES.md, Exercise 1, step 1). Write two @tool functions, get_project_profile() and list_open_cfps(),
     # that return state["profile"] and state["opportunities"] as JSON strings.
     return []
 
@@ -65,12 +66,12 @@ def mock_fits(state: AgentState) -> list[dict]:
 def reason_node(state: AgentState) -> dict:
     llm = get_llm()
 
-    # TODO 3. Write the Reason node.
+    # TODO 3 (see EXERCISES.md, Exercise 1, step 3). Write the Reason node.
     #   a. In mock mode llm is None. Score with mock_fits(state), log it with log_event,
     #      and return {"scores": fits}. This keeps the workshop running with no API key.
     #   b. Otherwise bind the tools to the model and loop (at most 2 rounds), running any
     #      tool calls and appending ToolMessages.
-    #   c. Ask for the answer with llm.with_structured_output(FitBatch).
+    #   c. Ask for the answer with llm.with_structured_output(FitBatch, method="json_schema").
     #   d. Return {"scores": [fit.model_dump() for fit in batch.fits]}.
     print("Reason isn't built yet. That's Build 1.")
     return {"scores": []}
