@@ -1,6 +1,6 @@
 """Decide. Turn checked scores into a choice, using thresholds you set.
 
-BUILD 2 (Exercise 2 in EXERCISES.md), along with Check.
+EXERCISE 2 (see EXERCISES.md), along with Check.
 """
 from agent import config
 from agent.log import log_event
