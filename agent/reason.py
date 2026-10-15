@@ -69,9 +69,12 @@ def reason_node(state: AgentState) -> dict:
     # TODO 3 (see EXERCISES.md, Exercise 1, step 3). Write the Reason node.
     #   a. In mock mode llm is None. Score with mock_fits(state), log it with log_event,
     #      and return {"scores": fits}. This keeps the workshop running with no API key.
-    #   b. Otherwise bind the tools to the model and loop (at most 2 rounds), running any
+    #   b. Otherwise build the messages: SystemMessage(SYSTEM) and a HumanMessage that asks the
+    #      model to score every CFP. Add SUGGEST to that message when config.LET_MODEL_SUGGEST is true.
+    #   c. Bind the tools to the model and loop (at most 2 rounds), logging and running any
     #      tool calls and appending ToolMessages.
-    #   c. Ask for the answer with llm.with_structured_output(FitBatch, method="json_schema").
-    #   d. Return {"scores": [fit.model_dump() for fit in batch.fits]}.
+    #   d. Add a HumanMessage asking for the scores, then call
+    #      llm.with_structured_output(FitBatch, method="json_schema").invoke(messages).
+    #   e. Log it and return {"scores": [fit.model_dump() for fit in batch.fits]}.
     print("Reason isn't built yet. That's Build 1.")
     return {"scores": []}
