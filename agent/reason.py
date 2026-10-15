@@ -1,6 +1,6 @@
 """Reason. The model reads the gathered facts and fills in a schema for every CFP.
 
-BUILD 1 (Exercise 1 in EXERCISES.md). Follow the TODOs. Stuck? git stash && git checkout step-1
+EXERCISE 1 (see EXERCISES.md). Follow the TODOs. Stuck? git stash && git checkout step-1
 """
 import json
 from typing import Literal
@@ -76,5 +76,5 @@ def reason_node(state: AgentState) -> dict:
     #   d. Add a HumanMessage asking for the scores, then call
     #      llm.with_structured_output(FitBatch, method="json_schema").invoke(messages).
     #   e. Log it and return {"scores": [fit.model_dump() for fit in batch.fits]}.
-    print("Reason isn't built yet. That's Build 1.")
+    print("Reason isn't built yet. That's Exercise 1.")
     return {"scores": []}

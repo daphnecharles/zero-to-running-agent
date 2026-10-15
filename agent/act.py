@@ -1,6 +1,6 @@
 """Act. Draft proposals, then stop and wait for a human.
 
-BUILD 3 (Exercise 3 in EXERCISES.md). Nothing here submits anywhere. Approved drafts are saved to outputs/.
+EXERCISE 3 (see EXERCISES.md). Nothing here submits anywhere. Approved drafts are saved to outputs/.
 Stuck? git stash && git checkout step-3
 """
 from langchain_core.messages import HumanMessage, SystemMessage
@@ -27,7 +27,7 @@ def draft_node(state: AgentState) -> dict:
     # TODO 1 (see EXERCISES.md, Exercise 3, step 1). For each apply_now fit (up to config.MAX_DRAFTS),
     # ask the model for a Draft with llm.with_structured_output(Draft, method="json_schema"). In mock mode, build a placeholder Draft.
     # Return {"drafts": [...]} with status "waiting_for_approval".
-    print("Act isn't built yet. That's Build 3.")
+    print("Act isn't built yet. That's Exercise 3.")
     return {"drafts": []}
 
 

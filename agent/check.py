@@ -1,6 +1,6 @@
 """Check. An independent gate between thinking and acting.
 
-BUILD 2 (Exercise 2 in EXERCISES.md). Every question here has a yes or no answer, so plain code answers it
+EXERCISE 2 (see EXERCISES.md). Every question here has a yes or no answer, so plain code answers it
 the same way every time. The model is never asked.
 Stuck? git stash && git checkout step-2
 """
@@ -36,5 +36,5 @@ def check_node(state: AgentState) -> dict:
     # TODO 2 (see EXERCISES.md, Exercise 2, step 2). For each fit in state["scores"], run the three checks against the source data.
     # Keep the ones that pass, adding cfp_url and cfp_deadline FROM THE SOURCE DATA.
     # Drop the rest into a rejected list with the reason, and log each one.
-    print("Check isn't built yet. That's Build 2.")
+    print("Check isn't built yet. That's Exercise 2.")
     return {"rejected": []}

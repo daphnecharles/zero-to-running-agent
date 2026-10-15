@@ -16,7 +16,7 @@ GEMINI_MODEL = os.getenv("GEMINI_MODEL", "gemini-3.5-flash-lite")
 # Check stage. Off by default so the workshop works on bad wifi.
 CHECK_LINKS_LIVE = os.getenv("CHECK_LINKS_LIVE", "false").lower() == "true"
 
-# Build 2 failure demo. Lets the model suggest conferences from its own memory.
+# Exercise 2 failure demo. Lets the model suggest conferences from its own memory.
 LET_MODEL_SUGGEST = os.getenv("LET_MODEL_SUGGEST", "false").lower() == "true"
 
 # Decide stage thresholds on topic_fit (0 to 10).
