@@ -1,6 +1,6 @@
 """Decide. Turn checked scores into a choice, using thresholds you set.
 
-Build 2 in the workshop, along with Check.
+Exercise 2 in the workshop, along with Check.
 """
 from agent import config
 from agent.log import log_event

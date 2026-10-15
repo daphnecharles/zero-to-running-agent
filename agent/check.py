@@ -1,6 +1,6 @@
 """Check. An independent gate between thinking and acting.
 
-Build 2 in the workshop. Every question here has a yes or no answer,
+Exercise 2 in the workshop. Every question here has a yes or no answer,
 so plain code answers it the same way every time. The model is never asked.
 """
 from datetime import date
