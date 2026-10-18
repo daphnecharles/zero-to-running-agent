@@ -4,10 +4,11 @@
     then open http://localhost:8000/docs
 """
 import uuid
+from typing import Literal
 
 from fastapi import FastAPI, HTTPException
 from langgraph.types import Command
-from pydantic import BaseModel
+from pydantic import BaseModel, field_validator
 
 from agent.graph import build_graph
 
@@ -18,10 +19,18 @@ graph = build_graph()  # in-memory checkpoints, so runs live as long as the serv
 class RunRequest(BaseModel):
     repo_url: str | None = None  # a GitHub repo URL, or leave empty for the sample README
 
+    @field_validator("repo_url")
+    @classmethod
+    def github_only(cls, url):
+        # Gather also accepts local file paths for the CLI. Over HTTP that would let a caller read any file on the server.
+        if url is not None and not url.startswith("https://github.com/"):
+            raise ValueError("repo_url must start with https://github.com/")
+        return url
+
 
 class Decision(BaseModel):
     cfp_id: str
-    action: str  # "approve", "edit" or "reject"
+    action: Literal["approve", "edit", "reject"]
     abstract: str | None = None
 
 

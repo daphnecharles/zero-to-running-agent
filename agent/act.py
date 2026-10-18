@@ -65,8 +65,9 @@ def save_node(state: AgentState) -> dict:
     for draft in state["drafts"]:
         decision = by_id.get(draft["cfp_id"], {"action": "reject"})
         if decision["action"] == "edit":
-            draft = {**draft, "abstract": decision.get("abstract", draft["abstract"])}
-        status = "rejected" if decision["action"] == "reject" else "approved"
+            draft = {**draft, "abstract": decision.get("abstract") or draft["abstract"]}
+        # Allowlist, not blocklist: an unexpected action must never publish a draft.
+        status = "approved" if decision["action"] in ("approve", "edit") else "rejected"
         draft = {**draft, "status": status}
         drafts.append(draft)
         if status == "approved":
