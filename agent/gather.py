@@ -42,8 +42,8 @@ def read_readme(source: str | None) -> tuple[str, str]:
                 return resp.text, url
         print(f"Couldn't fetch a README from {source}, using the sample README instead.")
     elif source and Path(source).exists():
-        return Path(source).read_text(), source
-    return SAMPLE_README.read_text(), str(SAMPLE_README)
+        return Path(source).read_text(encoding="utf-8"), source
+    return SAMPLE_README.read_text(encoding="utf-8"), str(SAMPLE_README)
 
 
 def _has_word(text: str, word: str) -> bool:
@@ -73,6 +73,6 @@ def readme_node(state: AgentState) -> dict:
 
 
 def cfp_node(state: AgentState) -> dict:
-    data = json.loads((config.DATA_DIR / "cfps.json").read_text())
+    data = json.loads((config.DATA_DIR / "cfps.json").read_text(encoding="utf-8"))
     log_event(state["run_id"], "gather", "cfps_loaded", count=len(data["cfps"]), snapshot=data["snapshot_date"])
     return {"opportunities": data["cfps"]}
