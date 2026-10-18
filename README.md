@@ -97,7 +97,7 @@ Fallen behind? `git stash && git checkout step-N` and keep going.
 
 ## Try these
 
-- **Prompt injection.** Run `python run.py data/injected_readme.md`. That README hides instructions aimed at the model. See whether they change anything, and notice which stages couldn't be fooled either way. This only means something with a real model (`claude` or `gemini`). Mock mode scores by keyword overlap, so nothing in the README can influence it.
+- **Prompt injection.** Run `python run.py data/injected_readme.md`. That README hides instructions aimed at the model. See whether they change anything, and notice which stages couldn't be fooled either way. This only means something with a real model (`claude` or `gemini`). Mock mode scores by keyword overlap, so nothing in the README can influence it. With a real model, Decide trusts the model's score, so an injected 10 would reach `apply_now`. The `<project>` tags in the draft prompt help but are not a guarantee (a README can contain `</project>`). The human approval step is the control that holds.
 - **Rehearse another day.** `TODAY=2026-11-02 python run.py` shows what the gate does once more deadlines pass.
 
 ## Take it further
