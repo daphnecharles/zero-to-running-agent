@@ -55,6 +55,8 @@ def list_drafts(run_id: str):
 def review(run_id: str, decisions: list[Decision]):
     """Approve, edit or reject drafts. This resumes the graph. Nothing is ever submitted for you."""
     snapshot = graph.get_state(config_for(run_id))
+    if not snapshot.values:
+        raise HTTPException(404, "No run with that id")
     if not snapshot.next:
         raise HTTPException(409, "This run isn't waiting for review")
     result = graph.invoke(Command(resume=[d.model_dump() for d in decisions]), config_for(run_id))
