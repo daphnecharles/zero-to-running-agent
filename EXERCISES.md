@@ -18,9 +18,11 @@ You are not meant to finish every step perfectly. If the timer runs out, use the
 2. `python scripts/setup_check.py` prints `READY`.
 3. You know which model you are using. Mock mode needs no key and works for every exercise. A real model (Claude or Gemini) shows you more, and each exercise says what.
 
-**The expected output below is from mock mode.** It was captured with `TODAY=2026-10-19`, the workshop day. If you run on another day, some deadlines will be judged differently. To match this file exactly, put `TODAY=2026-10-19` in front of any command, for example `TODAY=2026-10-19 python run.py`. Run IDs (like `416826d2`) and file paths are different on every run.
+**The expected output below is from mock mode.** It was captured with `TODAY=2026-10-19`, the workshop day. If you run on another day (the sample deadlines fall within days of the workshop), some deadlines will be judged differently. To match this file exactly, put `TODAY=2026-10-19` in front of any command, for example `TODAY=2026-10-19 python run.py`. Run IDs (like `416826d2`) and file paths are different on every run.
 
-**About `pytest`.** `tests/test_check_decide.py` checks the Check and Decide code. On `main` and `step-1` it fails on purpose, because that code does not exist yet. You will see `4 failed, 2 passed`. Think of it as a progress bar. It turns green when Exercise 2 is done, and stays green on `step-2` and `step-3`.
+**On Windows.** Commands that start with a variable, like `TODAY=2026-10-19 python run.py`, only work in macOS and Linux shells. See "Setting a variable for one run" in the README for the PowerShell, Command Prompt and `.env` forms. `cat outputs/...` becomes `type outputs\...`, and `tail -n 3 logs/runs.jsonl` becomes `Get-Content logs\runs.jsonl -Tail 3` in PowerShell.
+
+**About `pytest`.** `tests/test_check_decide.py` checks the Check and Decide code. On `main` and `step-1` it fails on purpose, because that code does not exist yet. You will see `4 failed, 6 passed` (the other 6 tests cover Gather and the API, and already pass). Think of it as a progress bar. It turns green when Exercise 2 is done, and stays green on `step-2` and `step-3`.
 
 **Stuck on anything?** Every exercise ends with a catch-up command and a tip for asking Claude Code to explain a `TODO`.
 
@@ -93,7 +95,7 @@ Work through the sub-steps in order. Delete the `print("Reason isn't built yet..
 
 - **3a. Mock mode.** When `llm is None`, call `mock_fits(state)`, log it with `log_event(state["run_id"], "reason", "scored", mode="mock", count=...)`, and return `{"scores": fits}`. *Why.* This is what lets people with no API key keep going.
 - **3b. Messages.** Build `messages = [SystemMessage(SYSTEM), HumanMessage(task)]`. The `task` asks the model to score every CFP. When `config.LET_MODEL_SUGGEST` is true, add `SUGGEST` to it. *Why.* `SYSTEM` tells the model to treat README text as data. `SUGGEST` powers the failure demo in Exercise 2.
-- **3c. Tool loop.** Bind the tools with `llm.bind_tools(tools)`. Loop at most twice. Each time, call the model, append its reply to `messages`, stop if `response.tool_calls` is empty, and otherwise run each call and append a `ToolMessage(content=result, tool_call_id=call["id"])`. Log each one with `log_event(..., "reason", "tool_call", tool=call["name"])`. *Why.* Two rounds is plenty here. A cap means a confused model can never loop forever.
+- **3c. Tool loop.** Bind the tools with `llm.bind_tools(tools)`. Loop at most twice. Each time, call the model, append its reply to `messages`, stop if `response.tool_calls` is empty, and otherwise run each call and append a `ToolMessage(content=result, tool_call_id=call["id"])`. To run a call, find the tool whose `.name` equals `call["name"]` and call `.invoke(call["args"])` on it. It returns the JSON text, which is your `result`. For example, `tools_by_name = {t.name: t for t in tools}` then `tools_by_name[call["name"]].invoke(call["args"])`. Log each one with `log_event(..., "reason", "tool_call", tool=call["name"])`. *Why.* Two rounds is plenty here. A cap means a confused model can never loop forever.
 - **3d. Ask for the answer as data.** Append `HumanMessage("Now return your scores for every CFP.")`, then call `llm.with_structured_output(FitBatch, method="json_schema").invoke(messages)`. *Why.* One batched call for all CFPs uses far fewer requests than one call each, which matters on free tiers. `method="json_schema"` is needed because Claude Sonnet 5.5 does not support the default method.
 - **3e. Return.** Log `scored` with `mode=config.MODEL_PROVIDER` and the count, then return `{"scores": [fit.model_dump() for fit in batch.fits]}`.
 
@@ -127,7 +129,7 @@ Ranked opportunities
 Run 416826d2 done. Logs are in logs/runs.jsonl
 ```
 
-**Mock mode only runs step 3a.** Your tools, schema and model calls (steps 1, 2 and 3b to 3e) never run without a model. To exercise them, set `MODEL_PROVIDER=claude` or `gemini` in `.env` and run again. You should also see the model ask for both tools.
+**Mock mode only runs step 3a.** Your tools, schema and model calls (steps 1, 2 and 3b to 3e) never run without a model. The same is true of model drafting in Exercise 3. To exercise them, set `MODEL_PROVIDER=claude` or `gemini` in `.env` and run again. You should also see the model ask for both tools.
 
 ```text
 [reason] tool_call (tool=get_project_profile)
@@ -176,7 +178,7 @@ With a real model, the model decides whether it needs the tool. You can nudge it
 
 ## Exercise 2. Check and Decide (15 minutes hands-on)
 
-**Done when.** `pytest` shows `6 passed`, and `LET_MODEL_SUGGEST=true python run.py` shows the gate rejecting AgentCon Atlantis 2026.
+**Done when.** `pytest` shows `10 passed`, and `LET_MODEL_SUGGEST=true python run.py` shows the gate rejecting AgentCon Atlantis 2026.
 
 **Goal.** Write a gate made of plain code that rejects invented, unreachable and closed conferences, then route what is left into apply now, maybe later or skip.
 
@@ -191,11 +193,11 @@ With a real model, the model decides whether it needs the tool. You can nudge it
 **1. Three yes or no checks (TODO 1a, 1b, 1c in `check.py`).** Each function currently returns `True` no matter what.
 
 - **1a. `is_real(cfp_id, known)`.** Is the id in our source data? `known` is a dict keyed by CFP id. *Why.* A model can invent a conference that sounds perfect.
-- **1b. `link_works(url)`.** Return `False` when `url` is empty or its scheme is not `https`. Use `urlparse(url).scheme`. If `config.CHECK_LINKS_LIVE` is on, also request the URL with `httpx.head(url, timeout=8, follow_redirects=True)`. Some sites refuse `HEAD` (status 405), so retry with `httpx.get`. Treat a status below 400 as working, and any `httpx.HTTPError` as not working. *Why.* A proposal for a dead link is wasted work. Live requests are off by default so the workshop survives bad wifi.
+- **1b. `link_works(url)`.** Check the CFP's submission link, the `cfp_url` field in `data/cfps.json`. (Each CFP also has a `url` for the conference website. Don't use that one.) Return `False` when `url` is empty or its scheme is not `https`. Use `urlparse(url).scheme`. If `config.CHECK_LINKS_LIVE` is on, also request the URL with `httpx.head(url, timeout=8, follow_redirects=True)`. Some sites refuse `HEAD` (status 405), so retry with `httpx.get`. Treat a status below 400 as working, and any `httpx.HTTPError` as not working. *Why.* A proposal for a dead link is wasted work. Live requests are off by default so the workshop survives bad wifi.
 - **1c. `deadline_open(deadline, today)`.** The deadline is text like `"2026-10-31"` and `today` is a `date`. Convert with `date.fromisoformat(...)` and compare. A deadline of today is still open. *Why.* Last year's deadline sounds just as confident as this year's.
 
 **2. The Check node (TODO 2, `check_node`).**
-Build `known = {cfp["id"]: cfp for cfp in state["opportunities"]}` and `today = config.today()`. For each fit in `state["scores"]`, run the three checks **in this order**. Keep the ones that pass and add `cfp_url` and `cfp_deadline` taken from the source data, not from the model's answer. Put the rest in a `rejected` list with a short reason, and log each with `log_event(..., "check", "rejected", cfp=..., why=...)`. Return `{"scores": passed, "rejected": rejected}`, and log a `done` event with both counts. Remove the `print("Check isn't built yet...")`.
+Build `known = {cfp["id"]: cfp for cfp in state["opportunities"]}` and `today = config.today()`. For each fit in `state["scores"]`, run the three checks **in this order**. Keep the ones that pass and add `cfp_url` and `cfp_deadline` taken from the source data, not from the model's answer. In `data/cfps.json` the fields are named `cfp_url` and `cfp_deadline` (not `url` or `deadline`), so use those names for the checks too. Use these reasons: `not in source data, the model may have invented it`, `link is missing or not a working https URL`, and `deadline passed on <date>`. Put the rest in a `rejected` list with a short reason, and log each with `log_event(..., "check", "rejected", cfp=..., why=...)`. Return `{"scores": passed, "rejected": rejected}`, and log a `done` event with both counts. Remove the `print("Check isn't built yet...")`.
 
 *Why.* Facts must come from your data because the model's version of a deadline might be wrong. Check `is_real` first. For an invented conference, `known.get(...)` is `None`, and reading a field from `None` crashes.
 
@@ -220,14 +222,14 @@ FAILED tests/test_check_decide.py::test_invented_conference_is_not_real - Ass...
 FAILED tests/test_check_decide.py::test_link_must_be_https - AssertionError: ...
 FAILED tests/test_check_decide.py::test_deadline - AssertionError: assert not...
 FAILED tests/test_check_decide.py::test_routes - AssertionError: assert 'skip...
-4 failed, 2 passed in 0.04s
+4 failed, 6 passed in 0.05s
 ```
 
 When you are done, you should see this.
 
 ```text
 ......                                                                   [100%]
-6 passed in 0.04s
+10 passed in 0.05s
 ```
 
 Now the agent.
@@ -306,7 +308,7 @@ TODAY=2026-11-02 python run.py
 | `deadline_open` always returns `True` | The stub is still in place | Replace the stub's `return True` with a real comparison |
 | `TypeError: '>=' not supported between instances of 'str' and 'datetime.date'` | You compared text to a date | Convert the deadline with `date.fromisoformat(...)` first |
 | `TypeError: 'NoneType' object is not subscriptable` in `check_node` | You read a field from an unknown CFP | Run `is_real` before anything that uses `known[...]` |
-| Everything is rejected as `deadline passed` | `TODAY` is set far in the future | Run `unset TODAY`, or set `TODAY=2026-10-19` |
+| Everything is rejected as `deadline passed` | `TODAY` is set far in the future | Clear it (`unset TODAY` on macOS and Linux, `Remove-Item Env:TODAY` in PowerShell, `set TODAY=` in Command Prompt, or delete the line from `.env`), or set `TODAY=2026-10-19` |
 | `routed (apply_now=0 ...)` and every row says `skip` | `route_for` still returns `"skip"` | Finish step 3a. Check the thresholds in `agent/config.py` |
 | Live link checks are slow or fail | Conference wifi | Leave `CHECK_LINKS_LIVE=false`, which is the default |
 | Provider or git errors | Same as Exercise 1 | See the table in Exercise 1 |
@@ -373,7 +375,7 @@ decisions = interrupt({"drafts": state["drafts"]})
 *Why.* This one line is the most important safety feature in the project. The checkpointer in `graph.py` is what lets the graph remember where it stopped.
 
 **3. Save (TODO 3, `save_node`).**
-Index the decisions by `cfp_id`. For each draft, find its decision. If there is none, treat it as a reject. For `edit`, replace the abstract with the one the human supplied. Set the status to `rejected` or `approved`. Write the approved ones to `outputs/approved_<run_id>.md` (create the folder if needed), log a `saved` event, and return `{"drafts": drafts}`. Never submit anything.
+Index the decisions by `cfp_id`. For each draft, find its decision. If there is none, treat it as a reject. For `edit`, replace the abstract with the one the human supplied, and keep the original if they typed nothing. Set the status to `approved` for `approve` and `edit`, and `rejected` for everything else, so an unexpected action can never publish a draft. Write the approved ones to `outputs/approved_<run_id>.md` (create the folder if needed, and pass `encoding="utf-8"` to `write_text`, because drafts can contain characters like arrows that the default encoding on Windows cannot save), log a `saved` event, and return `{"drafts": drafts}`. If nothing was approved, write no file (or an empty one, either is fine) and log `approved=0`. Never submit anything.
 
 *Why.* Defaulting to reject means a missing answer can never publish something. This is the safe default.
 
@@ -474,7 +476,7 @@ uvicorn main:app --reload
 
 Open http://localhost:8000/docs. Then try the three endpoints in order. For each one, click the endpoint, click **Try it out**, fill in the fields, and click **Execute**.
 
-1. **`POST /runs`** starts a run. Use `{}` as the body for the sample project, or `{"repo_url": "https://github.com/you/your-repo"}`. The run goes until the pause and returns this (shortened).
+1. **`POST /runs`** starts a run. Use `{}` as the body for the sample project, or `{"repo_url": "https://github.com/you/your-repo"}` (the API only accepts `https://github.com/...` URLs, so it can't be used to read files from the server). The run goes until the pause and returns this (shortened).
 
    ```json
    {
@@ -535,7 +537,7 @@ Open http://localhost:8000/docs. Then try the three endpoints in order. For each
 
    The response lists the drafts again with their new statuses, `approved` and `rejected`. The approved one is now in `outputs/`.
 
-Try sending the same review a second time. You should get a `409` with `This run isn't waiting for review`, because the graph already finished. A run ID that does not exist gets a `404` with `No run with that id`.
+Try sending the same review a second time. You should get a `409` with `This run isn't waiting for review`, because the graph already finished. A run ID that does not exist gets a `404` with `No run with that id`, from both `GET /runs/{run_id}/drafts` and `POST /runs/{run_id}/review`.
 
 Runs live in the server's memory. If the server restarts (including when `--reload` notices you saved a file), old run IDs are forgotten. Start a new run.
 
@@ -562,7 +564,7 @@ You can do the same through the API by putting your URL in `repo_url` in `POST /
 | `EOFError: EOF when reading a line` | `run.py` has no terminal to ask you questions in | Run it in an interactive terminal, not piped or in the background |
 | `Act isn't built yet. That's Exercise 3.` still prints, and no draft prompt appears | The stub is still in place | Finish step 1 and delete the `print` and the placeholder `return` |
 | The run finishes without ever asking you | `review_node` is not calling `interrupt(...)` | Finish step 2 |
-| A `422` response from `/review` | The body is not a list of decisions | Send `[ {...}, {...} ]`, with each item holding `cfp_id` and `action` |
+| A `422` response from `/review` | The body is not a list of decisions, or an `action` is not `approve`, `edit` or `reject` | Send `[ {...}, {...} ]`, with each item holding `cfp_id` and a valid `action` |
 | `409` `This run isn't waiting for review` | The run already finished, or the server restarted | Start a new run with `POST /runs` |
 | `404` `No run with that id` | Wrong id, or the server restarted | Copy the `run_id` from a fresh `POST /runs` |
 | `address already in use` when starting uvicorn | Another server is on port 8000 | Stop it with Ctrl+C, or run `uvicorn main:app --reload --port 8001` |
