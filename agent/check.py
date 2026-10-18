@@ -47,8 +47,8 @@ def check_node(state: AgentState) -> dict:
         cfp = known.get(fit["cfp_id"])
         if not is_real(fit["cfp_id"], known):
             reason = "not in source data, the model may have invented it"
-        elif not link_works(cfp["cfp_url"]):
-            reason = "CFP link doesn't work"
+        elif not link_works(cfp.get("cfp_url")):
+            reason = "link is missing or not a working https URL"
         elif not deadline_open(cfp["cfp_deadline"], today):
             reason = f"deadline passed on {cfp['cfp_deadline']}"
         else:
