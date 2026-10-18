@@ -46,11 +46,16 @@ def read_readme(source: str | None) -> tuple[str, str]:
     return SAMPLE_README.read_text(), str(SAMPLE_README)
 
 
+def _has_word(text: str, word: str) -> bool:
+    """Match whole words, so short keywords like "ai" or "ci" don't fire inside "maiden" or "city"."""
+    return re.search(rf"\b{re.escape(word)}(?:s|es|ed|ing|ment)?\b", text) is not None
+
+
 def build_profile(readme: str, source: str) -> dict:
     """Turn a README into a small profile. Plain string handling, no model."""
     title_match = re.search(r"^#\s+(.+)$", readme, re.MULTILINE)
     lowered = readme.lower()
-    topics = [topic for topic, words in TOPIC_KEYWORDS.items() if any(w in lowered for w in words)]
+    topics = [topic for topic, words in TOPIC_KEYWORDS.items() if any(_has_word(lowered, w) for w in words)]
     return {
         "name": title_match.group(1).strip() if title_match else "Untitled project",
         "source": source,

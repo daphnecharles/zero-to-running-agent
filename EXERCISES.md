@@ -20,7 +20,7 @@ You are not meant to finish every step perfectly. If the timer runs out, use the
 
 **The expected output below is from mock mode.** It was captured with `TODAY=2026-10-19`, the workshop day. If you run on another day (the sample deadlines fall within days of the workshop), some deadlines will be judged differently. To match this file exactly, put `TODAY=2026-10-19` in front of any command, for example `TODAY=2026-10-19 python run.py`. Run IDs (like `416826d2`) and file paths are different on every run.
 
-**About `pytest`.** `tests/test_check_decide.py` checks the Check and Decide code. On `main` and `step-1` it fails on purpose, because that code does not exist yet. You will see `4 failed, 2 passed`. Think of it as a progress bar. It turns green when Exercise 2 is done, and stays green on `step-2` and `step-3`.
+**About `pytest`.** `tests/test_check_decide.py` checks the Check and Decide code. On `main` and `step-1` it fails on purpose, because that code does not exist yet. You will see `4 failed, 6 passed` (the other 6 tests cover Gather and the API, and already pass). Think of it as a progress bar. It turns green when Exercise 2 is done, and stays green on `step-2` and `step-3`.
 
 **Stuck on anything?** Every exercise ends with a catch-up command and a tip for asking Claude Code to explain a `TODO`.
 
@@ -176,7 +176,7 @@ With a real model, the model decides whether it needs the tool. You can nudge it
 
 ## Exercise 2. Check and Decide (15 minutes hands-on)
 
-**Done when.** `pytest` shows `6 passed`, and `LET_MODEL_SUGGEST=true python run.py` shows the gate rejecting AgentCon Atlantis 2026.
+**Done when.** `pytest` shows `10 passed`, and `LET_MODEL_SUGGEST=true python run.py` shows the gate rejecting AgentCon Atlantis 2026.
 
 **Goal.** Write a gate made of plain code that rejects invented, unreachable and closed conferences, then route what is left into apply now, maybe later or skip.
 
@@ -220,14 +220,14 @@ FAILED tests/test_check_decide.py::test_invented_conference_is_not_real - Ass...
 FAILED tests/test_check_decide.py::test_link_must_be_https - AssertionError: ...
 FAILED tests/test_check_decide.py::test_deadline - AssertionError: assert not...
 FAILED tests/test_check_decide.py::test_routes - AssertionError: assert 'skip...
-4 failed, 2 passed in 0.04s
+4 failed, 6 passed in 0.05s
 ```
 
 When you are done, you should see this.
 
 ```text
 ......                                                                   [100%]
-6 passed in 0.04s
+10 passed in 0.05s
 ```
 
 Now the agent.
@@ -373,7 +373,7 @@ decisions = interrupt({"drafts": state["drafts"]})
 *Why.* This one line is the most important safety feature in the project. The checkpointer in `graph.py` is what lets the graph remember where it stopped.
 
 **3. Save (TODO 3, `save_node`).**
-Index the decisions by `cfp_id`. For each draft, find its decision. If there is none, treat it as a reject. For `edit`, replace the abstract with the one the human supplied, and keep the original if they typed nothing. Set the status to `rejected` or `approved`. Write the approved ones to `outputs/approved_<run_id>.md` (create the folder if needed), log a `saved` event, and return `{"drafts": drafts}`. If nothing was approved, write no file (or an empty one, either is fine) and log `approved=0`. Never submit anything.
+Index the decisions by `cfp_id`. For each draft, find its decision. If there is none, treat it as a reject. For `edit`, replace the abstract with the one the human supplied, and keep the original if they typed nothing. Set the status to `approved` for `approve` and `edit`, and `rejected` for everything else, so an unexpected action can never publish a draft. Write the approved ones to `outputs/approved_<run_id>.md` (create the folder if needed), log a `saved` event, and return `{"drafts": drafts}`. If nothing was approved, write no file (or an empty one, either is fine) and log `approved=0`. Never submit anything.
 
 *Why.* Defaulting to reject means a missing answer can never publish something. This is the safe default.
 
@@ -472,7 +472,7 @@ uvicorn main:app --reload
 
 Open http://localhost:8000/docs. Then try the three endpoints in order. For each one, click the endpoint, click **Try it out**, fill in the fields, and click **Execute**.
 
-1. **`POST /runs`** starts a run. Use `{}` as the body for the sample project, or `{"repo_url": "https://github.com/you/your-repo"}`. The run goes until the pause and returns this (shortened).
+1. **`POST /runs`** starts a run. Use `{}` as the body for the sample project, or `{"repo_url": "https://github.com/you/your-repo"}` (the API only accepts `https://github.com/...` URLs, so it can't be used to read files from the server). The run goes until the pause and returns this (shortened).
 
    ```json
    {
@@ -556,7 +556,7 @@ You can do the same through the API by putting your URL in `repo_url` in `POST /
 | `EOFError: EOF when reading a line` | `run.py` has no terminal to ask you questions in | Run it in an interactive terminal, not piped or in the background |
 | `Act isn't built yet. That's Exercise 3.` still prints, and no draft prompt appears | The stub is still in place | Finish step 1 and delete the `print` and the placeholder `return` |
 | The run finishes without ever asking you | `review_node` is not calling `interrupt(...)` | Finish step 2 |
-| A `422` response from `/review` | The body is not a list of decisions | Send `[ {...}, {...} ]`, with each item holding `cfp_id` and `action` |
+| A `422` response from `/review` | The body is not a list of decisions, or an `action` is not `approve`, `edit` or `reject` | Send `[ {...}, {...} ]`, with each item holding `cfp_id` and a valid `action` |
 | `409` `This run isn't waiting for review` | The run already finished, or the server restarted | Start a new run with `POST /runs` |
 | `404` `No run with that id` | Wrong id, or the server restarted | Copy the `run_id` from a fresh `POST /runs` |
 | `address already in use` when starting uvicorn | Another server is on port 8000 | Stop it with Ctrl+C, or run `uvicorn main:app --reload --port 8001` |
