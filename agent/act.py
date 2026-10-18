@@ -65,8 +65,9 @@ def save_node(state: AgentState) -> dict:
     for draft in state["drafts"]:
         decision = by_id.get(draft["cfp_id"], {"action": "reject"})
         if decision["action"] == "edit":
-            draft = {**draft, "abstract": decision.get("abstract", draft["abstract"])}
-        status = "rejected" if decision["action"] == "reject" else "approved"
+            draft = {**draft, "abstract": decision.get("abstract") or draft["abstract"]}
+        # Allowlist, not blocklist: an unexpected action must never publish a draft.
+        status = "approved" if decision["action"] in ("approve", "edit") else "rejected"
         draft = {**draft, "status": status}
         drafts.append(draft)
         if status == "approved":
@@ -78,7 +79,7 @@ def save_node(state: AgentState) -> dict:
         path.write_text("\n\n".join(
             f"## {d['cfp_name']}\nSubmit by {d['cfp_deadline']} at {d['cfp_url']}\n\n### {d['title']}\n\n{d['abstract']}"
             for d in approved
-        ) + "\n")
+        ) + "\n", encoding="utf-8")
         log_event(state["run_id"], "act", "saved", approved=len(approved), path=str(path))
     else:
         log_event(state["run_id"], "act", "saved", approved=0)

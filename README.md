@@ -6,6 +6,8 @@ It's a simplified version of the architecture behind the [Sparx Growth Engine](h
 
 ## Before the workshop
 
+You need **Python 3.10 or newer** and git. On macOS the command is `python3`, because there is no plain `python` until your virtual environment is active (so `python -m venv` fails on a fresh Mac). Use `python3` for the `venv` line only. macOS also ships Python 3.9, which is too old (`pip install` fails with `No matching distribution found for langgraph>=1.0`). Check with `python3 --version`. If it is older, install a newer one (`brew install python@3.12`) and use `python3.12` in place of `python` for the `python -m venv` line below. After that, `python` inside the virtual environment is the right version.
+
 macOS or Linux
 
 ```bash
@@ -29,9 +31,26 @@ copy .env.example .env
 python scripts/setup_check.py
 ```
 
+In PowerShell, `.venv\Scripts\activate` can fail with "running scripts is disabled on this system". Allow scripts for this window only with `Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass`, then run `.venv\Scripts\activate` again. Or skip activation and put `.venv\Scripts\` in front of each command, for example `.venv\Scripts\python run.py`.
+
 You should see `READY`. If your local Python setup fights you, [open the repo in GitHub Codespaces](https://codespaces.new/daphnecharles/zero-to-running-agent) instead. The dev container installs everything for you.
 
 Cloned before October 18? Run `git pull`.
+
+Tip: `python scripts/setup_check.py` also works before `pip install`. It reports a Python that is too old first.
+
+## Setting a variable for one run
+
+Some commands in this repo put a variable in front, like `TODAY=2026-10-19 python run.py`. That form only works in macOS and Linux shells. Pick the form for your shell.
+
+| Shell | Form |
+|---|---|
+| macOS, Linux | `TODAY=2026-10-19 python run.py` |
+| Windows PowerShell | `$env:TODAY="2026-10-19"; python run.py` (then `Remove-Item Env:TODAY` when you are done) |
+| Windows Command Prompt | `set TODAY=2026-10-19&& python run.py` (then `set TODAY=` when you are done) |
+| Any shell | Add `TODAY=2026-10-19` as a line in `.env` (delete it when you are done) |
+
+The same goes for `LET_MODEL_SUGGEST=true` and any other variable in `.env.example`. `cat` and `tail` in EXERCISES.md also have Windows equivalents, which are listed there.
 
 ## Pick your model
 
@@ -43,10 +62,13 @@ Cloned before October 18? Run `git pull`.
 
 Everything the agent sends to a model is a public README and public CFP listings. If you use the Gemini free tier, read Google's free-tier data terms first.
 
+Mock mode is the quickest way through, but it skips the model code: the tool loop and structured output in Reason, and the drafting in Act, never run. Try a real model when you can.
+
 ## Run it
 
 ```bash
 python run.py                                  # the sample project
+TODAY=2026-10-19 python run.py                 # match the dates in EXERCISES.md
 python run.py https://github.com/you/your-repo # your own project
 uvicorn main:app --reload                      # the API and the Mic Check page, then open localhost:8000
 ```
@@ -57,7 +79,7 @@ uvicorn main:app --reload                      # the API and the Mic Check page,
 
 New to this? Work through [EXERCISES.md](EXERCISES.md). It has three guided exercises, one per build, with a time box, the files to open, numbered steps that match the `TODO` comments in the code, the output you should see, common errors and a catch-up command.
 
-Run `pytest` any time. The Check and Decide tests fail on `main` and `step-1` until you finish Exercise 2, and pass on `step-2` and `step-3`.
+Run `python -m pytest` (or just `pytest`) any time. The Check and Decide tests fail on `main` and `step-1` until you finish Exercise 2, and pass on `step-2` and `step-3`.
 
 ## How it works
 
@@ -90,7 +112,7 @@ Fallen behind? `git stash && git checkout step-N` and keep going.
 
 ## Try these
 
-- **Prompt injection.** Run `python run.py data/injected_readme.md`. That README hides instructions aimed at the model. See whether they change anything, and notice which stages couldn't be fooled either way.
+- **Prompt injection.** Run `python run.py data/injected_readme.md`. That README hides instructions aimed at the model. See whether they change anything, and notice which stages couldn't be fooled either way. This only means something with a real model (`claude` or `gemini`). Mock mode scores by keyword overlap, so nothing in the README can influence it. With a real model, Decide trusts the model's score, so an injected 10 would reach `apply_now`. The `<project>` tags in the draft prompt help but are not a guarantee (a README can contain `</project>`). The human approval step is the control that holds.
 - **Rehearse another day.** `TODAY=2026-11-02 python run.py` shows what the gate does once more deadlines pass.
 
 ## Take it further
