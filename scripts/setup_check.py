@@ -25,14 +25,14 @@ if not problems:
 
     provider = config.MODEL_PROVIDER
     if provider == "claude" and not os.getenv("ANTHROPIC_API_KEY"):
-        problems.append("MODEL_PROVIDER is claude but ANTHROPIC_API_KEY isn't set. Add it to .env, or use gemini or mock")
+        problems.append("MODEL_PROVIDER is claude but ANTHROPIC_API_KEY isn't set. Add your key to .env, or set MODEL_PROVIDER=mock (no key needed) or MODEL_PROVIDER=gemini in .env")
     elif provider == "gemini" and not os.getenv("GOOGLE_API_KEY"):
-        problems.append("MODEL_PROVIDER is gemini but GOOGLE_API_KEY isn't set. Get a free key at aistudio.google.com")
+        problems.append("MODEL_PROVIDER is gemini but GOOGLE_API_KEY isn't set. Get a free key at aistudio.google.com and add it to .env, or set MODEL_PROVIDER=mock (no key needed)")
     elif provider not in ("claude", "gemini", "mock"):
         problems.append(f"MODEL_PROVIDER must be claude, gemini or mock, not {provider!r}")
     notes.append(f"Model provider is {provider}")
 
-    fixtures = json.loads((config.DATA_DIR / "cfps.json").read_text())
+    fixtures = json.loads((config.DATA_DIR / "cfps.json").read_text(encoding="utf-8"))
     if fixtures.get("open_as_of", "") < date.today().isoformat():
         notes.append("CFP fixtures are older than today. Run python scripts/refresh_fixtures.py to update them")
 
