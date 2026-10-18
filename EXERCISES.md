@@ -466,6 +466,8 @@ tail -n 3 logs/runs.jsonl
 
 `main.py` is the agent's own web API, built with FastAPI. It runs the same graph you just ran in the terminal, but over HTTP, so other programs can start runs and review drafts. FastAPI also builds a page where you can try every endpoint from your browser.
 
+Prefer buttons to JSON? Open http://localhost:8000 once the server is running. That is the Mic Check page. It calls the same three endpoints, so anything you approve there is saved in `outputs/` exactly as it is from `/docs`.
+
 ```bash
 uvicorn main:app --reload
 ```
@@ -478,6 +480,10 @@ Open http://localhost:8000/docs. Then try the three endpoints in order. For each
    {
      "run_id": "563d9c62",
      "waiting_for_review": true,
+     "project": {
+       "name": "pgsnap",
+       "source": "/Users/you/zero-to-running-agent/data/sample_readme.md"
+     },
      "scores": [
        {
          "cfp_id": "build-it-summit-2026",
