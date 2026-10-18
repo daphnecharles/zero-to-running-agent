@@ -6,6 +6,8 @@ It's a simplified version of the architecture behind the [Sparx Growth Engine](h
 
 ## Before the workshop
 
+You need **Python 3.10 or newer** and git. macOS ships Python 3.9, which is too old (`pip install` fails with `No matching distribution found for langgraph>=1.0`). Check with `python3 --version`. If it is older, install a newer one (`brew install python@3.12`) and use `python3.12` in place of `python` for the `python -m venv` line below. After that, `python` inside the virtual environment is the right version.
+
 macOS or Linux
 
 ```bash
@@ -33,6 +35,8 @@ You should see `READY`. If your local Python setup fights you, [open the repo in
 
 Cloned before October 18? Run `git pull`.
 
+Tip: `python scripts/setup_check.py` also works before `pip install`. It reports a Python that is too old first.
+
 ## Pick your model
 
 | Option | When | Set in `.env` |
@@ -43,10 +47,13 @@ Cloned before October 18? Run `git pull`.
 
 Everything the agent sends to a model is a public README and public CFP listings. If you use the Gemini free tier, read Google's free-tier data terms first.
 
+Mock mode is the quickest way through, but it skips the model code: the tool loop and structured output in Reason, and the drafting in Act, never run. Try a real model when you can.
+
 ## Run it
 
 ```bash
 python run.py                                  # the sample project
+TODAY=2026-10-19 python run.py                 # match the dates in EXERCISES.md
 python run.py https://github.com/you/your-repo # your own project
 uvicorn main:app --reload                      # the API, then open localhost:8000/docs
 ```
@@ -57,7 +64,7 @@ uvicorn main:app --reload                      # the API, then open localhost:80
 
 New to this? Work through [EXERCISES.md](EXERCISES.md). It has three guided exercises, one per build, with a time box, the files to open, numbered steps that match the `TODO` comments in the code, the output you should see, common errors and a catch-up command.
 
-Run `pytest` any time. The Check and Decide tests fail on `main` and `step-1` until you finish Exercise 2, and pass on `step-2` and `step-3`.
+Run `python -m pytest` (or just `pytest`) any time. The Check and Decide tests fail on `main` and `step-1` until you finish Exercise 2, and pass on `step-2` and `step-3`.
 
 ## How it works
 
@@ -90,7 +97,7 @@ Fallen behind? `git stash && git checkout step-N` and keep going.
 
 ## Try these
 
-- **Prompt injection.** Run `python run.py data/injected_readme.md`. That README hides instructions aimed at the model. See whether they change anything, and notice which stages couldn't be fooled either way.
+- **Prompt injection.** Run `python run.py data/injected_readme.md`. That README hides instructions aimed at the model. See whether they change anything, and notice which stages couldn't be fooled either way. This only means something with a real model (`claude` or `gemini`). Mock mode scores by keyword overlap, so nothing in the README can influence it.
 - **Rehearse another day.** `TODAY=2026-11-02 python run.py` shows what the gate does once more deadlines pass.
 
 ## Take it further

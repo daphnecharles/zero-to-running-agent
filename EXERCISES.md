@@ -18,7 +18,7 @@ You are not meant to finish every step perfectly. If the timer runs out, use the
 2. `python scripts/setup_check.py` prints `READY`.
 3. You know which model you are using. Mock mode needs no key and works for every exercise. A real model (Claude or Gemini) shows you more, and each exercise says what.
 
-**The expected output below is from mock mode.** It was captured with `TODAY=2026-10-19`, the workshop day. If you run on another day, some deadlines will be judged differently. To match this file exactly, put `TODAY=2026-10-19` in front of any command, for example `TODAY=2026-10-19 python run.py`. Run IDs (like `416826d2`) and file paths are different on every run.
+**The expected output below is from mock mode.** It was captured with `TODAY=2026-10-19`, the workshop day. If you run on another day (the sample deadlines fall within days of the workshop), some deadlines will be judged differently. To match this file exactly, put `TODAY=2026-10-19` in front of any command, for example `TODAY=2026-10-19 python run.py`. Run IDs (like `416826d2`) and file paths are different on every run.
 
 **About `pytest`.** `tests/test_check_decide.py` checks the Check and Decide code. On `main` and `step-1` it fails on purpose, because that code does not exist yet. You will see `4 failed, 2 passed`. Think of it as a progress bar. It turns green when Exercise 2 is done, and stays green on `step-2` and `step-3`.
 
@@ -127,7 +127,7 @@ Ranked opportunities
 Run 416826d2 done. Logs are in logs/runs.jsonl
 ```
 
-**Mock mode only runs step 3a.** Your tools, schema and model calls (steps 1, 2 and 3b to 3e) never run without a model. To exercise them, set `MODEL_PROVIDER=claude` or `gemini` in `.env` and run again. You should also see the model ask for both tools.
+**Mock mode only runs step 3a.** Your tools, schema and model calls (steps 1, 2 and 3b to 3e) never run without a model. The same is true of model drafting in Exercise 3. To exercise them, set `MODEL_PROVIDER=claude` or `gemini` in `.env` and run again. You should also see the model ask for both tools.
 
 ```text
 [reason] tool_call (tool=get_project_profile)
@@ -191,11 +191,11 @@ With a real model, the model decides whether it needs the tool. You can nudge it
 **1. Three yes or no checks (TODO 1a, 1b, 1c in `check.py`).** Each function currently returns `True` no matter what.
 
 - **1a. `is_real(cfp_id, known)`.** Is the id in our source data? `known` is a dict keyed by CFP id. *Why.* A model can invent a conference that sounds perfect.
-- **1b. `link_works(url)`.** Return `False` when `url` is empty or its scheme is not `https`. Use `urlparse(url).scheme`. If `config.CHECK_LINKS_LIVE` is on, also request the URL with `httpx.head(url, timeout=8, follow_redirects=True)`. Some sites refuse `HEAD` (status 405), so retry with `httpx.get`. Treat a status below 400 as working, and any `httpx.HTTPError` as not working. *Why.* A proposal for a dead link is wasted work. Live requests are off by default so the workshop survives bad wifi.
+- **1b. `link_works(url)`.** Check the CFP's submission link, the `cfp_url` field in `data/cfps.json`. (Each CFP also has a `url` for the conference website. Don't use that one.) Return `False` when `url` is empty or its scheme is not `https`. Use `urlparse(url).scheme`. If `config.CHECK_LINKS_LIVE` is on, also request the URL with `httpx.head(url, timeout=8, follow_redirects=True)`. Some sites refuse `HEAD` (status 405), so retry with `httpx.get`. Treat a status below 400 as working, and any `httpx.HTTPError` as not working. *Why.* A proposal for a dead link is wasted work. Live requests are off by default so the workshop survives bad wifi.
 - **1c. `deadline_open(deadline, today)`.** The deadline is text like `"2026-10-31"` and `today` is a `date`. Convert with `date.fromisoformat(...)` and compare. A deadline of today is still open. *Why.* Last year's deadline sounds just as confident as this year's.
 
 **2. The Check node (TODO 2, `check_node`).**
-Build `known = {cfp["id"]: cfp for cfp in state["opportunities"]}` and `today = config.today()`. For each fit in `state["scores"]`, run the three checks **in this order**. Keep the ones that pass and add `cfp_url` and `cfp_deadline` taken from the source data, not from the model's answer. Put the rest in a `rejected` list with a short reason, and log each with `log_event(..., "check", "rejected", cfp=..., why=...)`. Return `{"scores": passed, "rejected": rejected}`, and log a `done` event with both counts. Remove the `print("Check isn't built yet...")`.
+Build `known = {cfp["id"]: cfp for cfp in state["opportunities"]}` and `today = config.today()`. For each fit in `state["scores"]`, run the three checks **in this order**. Keep the ones that pass and add `cfp_url` and `cfp_deadline` taken from the source data, not from the model's answer. In `data/cfps.json` the fields are named `cfp_url` and `cfp_deadline` (not `url` or `deadline`), so use those names for the checks too. Use these reasons: `not in source data, the model may have invented it`, `link is missing or not a working https URL`, and `deadline passed on <date>`. Put the rest in a `rejected` list with a short reason, and log each with `log_event(..., "check", "rejected", cfp=..., why=...)`. Return `{"scores": passed, "rejected": rejected}`, and log a `done` event with both counts. Remove the `print("Check isn't built yet...")`.
 
 *Why.* Facts must come from your data because the model's version of a deadline might be wrong. Check `is_real` first. For an invented conference, `known.get(...)` is `None`, and reading a field from `None` crashes.
 
@@ -529,7 +529,7 @@ Open http://localhost:8000/docs. Then try the three endpoints in order. For each
 
    The response lists the drafts again with their new statuses, `approved` and `rejected`. The approved one is now in `outputs/`.
 
-Try sending the same review a second time. You should get a `409` with `This run isn't waiting for review`, because the graph already finished. A run ID that does not exist gets a `404` with `No run with that id`.
+Try sending the same review a second time. You should get a `409` with `This run isn't waiting for review`, because the graph already finished. A run ID that does not exist gets a `404` with `No run with that id`, from both `GET /runs/{run_id}/drafts` and `POST /runs/{run_id}/review`.
 
 Runs live in the server's memory. If the server restarts (including when `--reload` notices you saved a file), old run IDs are forgotten. Start a new run.
 
