@@ -80,3 +80,9 @@ def test_save_approves_and_applies_edits_and_writes_only_approved():
 def test_save_edit_without_abstract_keeps_the_original():
     out = run_save([{"cfp_id": "a", "action": "edit"}, {"cfp_id": "b", "action": "edit", "abstract": ""}])
     assert [d["abstract"] for d in out] == ["original", "original"]
+
+
+def test_save_writes_non_ascii_text_as_utf8():
+    ds = [{**draft("a"), "abstract": "snapshots → faster, naïve ü"}]
+    save_node({"run_id": "t", "drafts": ds, "decisions": [{"cfp_id": "a", "action": "approve"}]})
+    assert "snapshots → faster" in (config.OUTPUT_DIR / "approved_t.md").read_text(encoding="utf-8")

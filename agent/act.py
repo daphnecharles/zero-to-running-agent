@@ -79,7 +79,7 @@ def save_node(state: AgentState) -> dict:
         path.write_text("\n\n".join(
             f"## {d['cfp_name']}\nSubmit by {d['cfp_deadline']} at {d['cfp_url']}\n\n### {d['title']}\n\n{d['abstract']}"
             for d in approved
-        ) + "\n")
+        ) + "\n", encoding="utf-8")
         log_event(state["run_id"], "act", "saved", approved=len(approved), path=str(path))
     else:
         log_event(state["run_id"], "act", "saved", approved=0)
