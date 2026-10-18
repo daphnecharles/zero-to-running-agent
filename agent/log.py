@@ -14,7 +14,7 @@ def log_event(run_id: str, stage: str, event: str, **details) -> None:
         **details,
     }
     config.LOG_DIR.mkdir(exist_ok=True)
-    with open(config.LOG_DIR / "runs.jsonl", "a") as f:
+    with open(config.LOG_DIR / "runs.jsonl", "a", encoding="utf-8") as f:
         f.write(json.dumps(record) + "\n")
     summary = ", ".join(f"{k}={v}" for k, v in details.items() if not isinstance(v, (list, dict)))
     print(f"[{stage}] {event}" + (f" ({summary})" if summary else ""))
