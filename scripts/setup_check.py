@@ -32,7 +32,7 @@ if not problems:
         problems.append(f"MODEL_PROVIDER must be claude, gemini or mock, not {provider!r}")
     notes.append(f"Model provider is {provider}")
 
-    fixtures = json.loads((config.DATA_DIR / "cfps.json").read_text())
+    fixtures = json.loads((config.DATA_DIR / "cfps.json").read_text(encoding="utf-8"))
     if fixtures.get("open_as_of", "") < date.today().isoformat():
         notes.append("CFP fixtures are older than today. Run python scripts/refresh_fixtures.py to update them")
 
