@@ -1,14 +1,18 @@
 """The agent behind an API.
 
     uvicorn main:app --reload
-    then open http://localhost:8000/docs
+    then open http://localhost:8000 for the Mic Check page,
+    or http://localhost:8000/docs to try the endpoints directly
 """
 import uuid
+from pathlib import Path
 
 from fastapi import FastAPI, HTTPException
+from fastapi.responses import FileResponse
 from langgraph.types import Command
 from pydantic import BaseModel
 
+from agent import config
 from agent.graph import build_graph
 
 app = FastAPI(title="Mic Check")
@@ -37,6 +41,7 @@ def start_run(req: RunRequest):
     return {
         "run_id": run_id,
         "waiting_for_review": "__interrupt__" in result,
+        "project": {"name": result["profile"]["name"], "source": result["profile"]["source"]},
         "scores": result.get("scores", []),
         "rejected": result.get("rejected", []),
     }
@@ -61,6 +66,12 @@ def review(run_id: str, decisions: list[Decision]):
     return {"run_id": run_id, "drafts": result.get("drafts", [])}
 
 
+@app.get("/", include_in_schema=False)
+def home():
+    """A simple page that calls the endpoints below. All the logic stays in the API."""
+    return FileResponse(Path(__file__).parent / "ui" / "index.html")
+
+
 @app.get("/health")
 def health():
-    return {"ok": True}
+    return {"ok": True, "model": config.MODEL_PROVIDER}
