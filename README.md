@@ -6,7 +6,7 @@ It's a simplified version of the architecture behind the [Sparx Growth Engine](h
 
 ## Before the workshop
 
-You need **Python 3.10 or newer** and git. macOS ships Python 3.9, which is too old (`pip install` fails with `No matching distribution found for langgraph>=1.0`). Check with `python3 --version`. If it is older, install a newer one (`brew install python@3.12`) and use `python3.12` in place of `python` for the `python -m venv` line below. After that, `python` inside the virtual environment is the right version.
+You need **Python 3.10 or newer** and git. On macOS the command is `python3`, because there is no plain `python` until your virtual environment is active (so `python -m venv` fails on a fresh Mac). Use `python3` for the `venv` line only. macOS also ships Python 3.9, which is too old (`pip install` fails with `No matching distribution found for langgraph>=1.0`). Check with `python3 --version`. If it is older, install a newer one (`brew install python@3.12`) and use `python3.12` in place of `python` for the `python -m venv` line below. After that, `python` inside the virtual environment is the right version.
 
 macOS or Linux
 
