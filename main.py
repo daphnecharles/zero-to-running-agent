@@ -6,11 +6,12 @@
 """
 import uuid
 from pathlib import Path
+from typing import Literal
 
 from fastapi import FastAPI, HTTPException
 from fastapi.responses import FileResponse
 from langgraph.types import Command
-from pydantic import BaseModel
+from pydantic import BaseModel, field_validator
 
 from agent import config
 from agent.graph import build_graph
@@ -22,10 +23,18 @@ graph = build_graph()  # in-memory checkpoints, so runs live as long as the serv
 class RunRequest(BaseModel):
     repo_url: str | None = None  # a GitHub repo URL, or leave empty for the sample README
 
+    @field_validator("repo_url")
+    @classmethod
+    def github_only(cls, url):
+        # Gather also accepts local file paths for the CLI. Over HTTP that would let a caller read any file on the server.
+        if url is not None and not url.startswith("https://github.com/"):
+            raise ValueError("repo_url must start with https://github.com/")
+        return url
+
 
 class Decision(BaseModel):
     cfp_id: str
-    action: str  # "approve", "edit" or "reject"
+    action: Literal["approve", "edit", "reject"]
     abstract: str | None = None
 
 
@@ -60,6 +69,8 @@ def list_drafts(run_id: str):
 def review(run_id: str, decisions: list[Decision]):
     """Approve, edit or reject drafts. This resumes the graph. Nothing is ever submitted for you."""
     snapshot = graph.get_state(config_for(run_id))
+    if not snapshot.values:
+        raise HTTPException(404, "No run with that id")
     if not snapshot.next:
         raise HTTPException(409, "This run isn't waiting for review")
     result = graph.invoke(Command(resume=[d.model_dump() for d in decisions]), config_for(run_id))
