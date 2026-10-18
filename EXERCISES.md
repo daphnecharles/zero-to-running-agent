@@ -20,6 +20,8 @@ You are not meant to finish every step perfectly. If the timer runs out, use the
 
 **The expected output below is from mock mode.** It was captured with `TODAY=2026-10-19`, the workshop day. If you run on another day (the sample deadlines fall within days of the workshop), some deadlines will be judged differently. To match this file exactly, put `TODAY=2026-10-19` in front of any command, for example `TODAY=2026-10-19 python run.py`. Run IDs (like `416826d2`) and file paths are different on every run.
 
+**On Windows.** Commands that start with a variable, like `TODAY=2026-10-19 python run.py`, only work in macOS and Linux shells. See "Setting a variable for one run" in the README for the PowerShell, Command Prompt and `.env` forms. `cat outputs/...` becomes `type outputs\...`, and `tail -n 3 logs/runs.jsonl` becomes `Get-Content logs\runs.jsonl -Tail 3` in PowerShell.
+
 **About `pytest`.** `tests/test_check_decide.py` checks the Check and Decide code. On `main` and `step-1` it fails on purpose, because that code does not exist yet. You will see `4 failed, 6 passed` (the other 6 tests cover Gather and the API, and already pass). Think of it as a progress bar. It turns green when Exercise 2 is done, and stays green on `step-2` and `step-3`.
 
 **Stuck on anything?** Every exercise ends with a catch-up command and a tip for asking Claude Code to explain a `TODO`.
@@ -306,7 +308,7 @@ TODAY=2026-11-02 python run.py
 | `deadline_open` always returns `True` | The stub is still in place | Replace the stub's `return True` with a real comparison |
 | `TypeError: '>=' not supported between instances of 'str' and 'datetime.date'` | You compared text to a date | Convert the deadline with `date.fromisoformat(...)` first |
 | `TypeError: 'NoneType' object is not subscriptable` in `check_node` | You read a field from an unknown CFP | Run `is_real` before anything that uses `known[...]` |
-| Everything is rejected as `deadline passed` | `TODAY` is set far in the future | Run `unset TODAY`, or set `TODAY=2026-10-19` |
+| Everything is rejected as `deadline passed` | `TODAY` is set far in the future | Clear it (`unset TODAY` on macOS and Linux, `Remove-Item Env:TODAY` in PowerShell, `set TODAY=` in Command Prompt, or delete the line from `.env`), or set `TODAY=2026-10-19` |
 | `routed (apply_now=0 ...)` and every row says `skip` | `route_for` still returns `"skip"` | Finish step 3a. Check the thresholds in `agent/config.py` |
 | Live link checks are slow or fail | Conference wifi | Leave `CHECK_LINKS_LIVE=false`, which is the default |
 | Provider or git errors | Same as Exercise 1 | See the table in Exercise 1 |
@@ -373,7 +375,7 @@ decisions = interrupt({"drafts": state["drafts"]})
 *Why.* This one line is the most important safety feature in the project. The checkpointer in `graph.py` is what lets the graph remember where it stopped.
 
 **3. Save (TODO 3, `save_node`).**
-Index the decisions by `cfp_id`. For each draft, find its decision. If there is none, treat it as a reject. For `edit`, replace the abstract with the one the human supplied, and keep the original if they typed nothing. Set the status to `approved` for `approve` and `edit`, and `rejected` for everything else, so an unexpected action can never publish a draft. Write the approved ones to `outputs/approved_<run_id>.md` (create the folder if needed), log a `saved` event, and return `{"drafts": drafts}`. If nothing was approved, write no file (or an empty one, either is fine) and log `approved=0`. Never submit anything.
+Index the decisions by `cfp_id`. For each draft, find its decision. If there is none, treat it as a reject. For `edit`, replace the abstract with the one the human supplied, and keep the original if they typed nothing. Set the status to `approved` for `approve` and `edit`, and `rejected` for everything else, so an unexpected action can never publish a draft. Write the approved ones to `outputs/approved_<run_id>.md` (create the folder if needed, and pass `encoding="utf-8"` to `write_text`, because drafts can contain characters like arrows that the default encoding on Windows cannot save), log a `saved` event, and return `{"drafts": drafts}`. If nothing was approved, write no file (or an empty one, either is fine) and log `approved=0`. Never submit anything.
 
 *Why.* Defaulting to reject means a missing answer can never publish something. This is the safe default.
 

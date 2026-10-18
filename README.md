@@ -31,11 +31,26 @@ copy .env.example .env
 python scripts/setup_check.py
 ```
 
+In PowerShell, `.venv\Scripts\activate` can fail with "running scripts is disabled on this system". Allow scripts for this window only with `Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass`, then run `.venv\Scripts\activate` again. Or skip activation and put `.venv\Scripts\` in front of each command, for example `.venv\Scripts\python run.py`.
+
 You should see `READY`. If your local Python setup fights you, [open the repo in GitHub Codespaces](https://codespaces.new/daphnecharles/zero-to-running-agent) instead. The dev container installs everything for you.
 
 Cloned before October 18? Run `git pull`.
 
 Tip: `python scripts/setup_check.py` also works before `pip install`. It reports a Python that is too old first.
+
+## Setting a variable for one run
+
+Some commands in this repo put a variable in front, like `TODAY=2026-10-19 python run.py`. That form only works in macOS and Linux shells. Pick the form for your shell.
+
+| Shell | Form |
+|---|---|
+| macOS, Linux | `TODAY=2026-10-19 python run.py` |
+| Windows PowerShell | `$env:TODAY="2026-10-19"; python run.py` (then `Remove-Item Env:TODAY` when you are done) |
+| Windows Command Prompt | `set TODAY=2026-10-19&& python run.py` (then `set TODAY=` when you are done) |
+| Any shell | Add `TODAY=2026-10-19` as a line in `.env` (delete it when you are done) |
+
+The same goes for `LET_MODEL_SUGGEST=true` and any other variable in `.env.example`. `cat` and `tail` in EXERCISES.md also have Windows equivalents, which are listed there.
 
 ## Pick your model
 

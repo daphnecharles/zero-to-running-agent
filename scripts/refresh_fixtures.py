@@ -78,7 +78,7 @@ def main() -> None:
         "snapshot_date": date.today().isoformat(),
         "open_as_of": today.isoformat(),
         "cfps": picked,
-    }, indent=2) + "\n")
+    }, indent=2) + "\n", encoding="utf-8")
     print(f"Wrote {len(picked)} CFPs ({len(open_picked)} open, {len(closed_picked)} closed) to {OUT}")
 
 
