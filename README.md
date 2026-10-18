@@ -47,6 +47,8 @@ Tip: `python scripts/setup_check.py` also works before `pip install`. It reports
 
 Everything the agent sends to a model is a public README and public CFP listings. If you use the Gemini free tier, read Google's free-tier data terms first.
 
+Mock mode is the quickest way through, but it skips the model code: the tool loop and structured output in Reason, and the drafting in Act, never run. Try a real model when you can.
+
 ## Run it
 
 ```bash
@@ -96,7 +98,6 @@ Fallen behind? `git stash && git checkout step-N` and keep going.
 ## Try these
 
 - **Prompt injection.** Run `python run.py data/injected_readme.md`. That README hides instructions aimed at the model. See whether they change anything, and notice which stages couldn't be fooled either way. This only means something with a real model (`claude` or `gemini`). Mock mode scores by keyword overlap, so nothing in the README can influence it.
-- **Mock mode skips the model code.** With `MODEL_PROVIDER=mock`, the tool loop and structured output in Reason (steps 3b to 3e) and the model drafting in Act never run. Try them with a real key when you can.
 - **Rehearse another day.** `TODAY=2026-11-02 python run.py` shows what the gate does once more deadlines pass.
 
 ## Take it further
