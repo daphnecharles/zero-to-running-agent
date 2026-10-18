@@ -48,10 +48,10 @@ Everything the agent sends to a model is a public README and public CFP listings
 ```bash
 python run.py                                  # the sample project
 python run.py https://github.com/you/your-repo # your own project
-uvicorn main:app --reload                      # the API, then open localhost:8000/docs
+uvicorn main:app --reload                      # the API and the Mic Check page, then open localhost:8000
 ```
 
-`main.py` is the agent's own web API, built with FastAPI. Start it with the `uvicorn` command, then open [localhost:8000/docs](http://localhost:8000/docs). That page lists every endpoint and lets you start a run, read the drafts and approve or reject them from your browser.
+`main.py` is the agent's own web API, built with FastAPI. Start it with the `uvicorn` command, then open [localhost:8000](http://localhost:8000) for a simple Mic Check page. Paste a public GitHub repo (or leave it empty for the sample project), read the ranked conferences, and approve, edit or reject each draft with buttons. The page only calls the API, so all the logic stays in the agent. To try the raw endpoints, open [localhost:8000/docs](http://localhost:8000/docs).
 
 ## Exercises
 
