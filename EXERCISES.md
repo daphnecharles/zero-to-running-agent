@@ -152,6 +152,13 @@ The scores will differ from the mock ones. They come from a model reading the RE
 | `Your local changes ... would be overwritten by checkout` | You ran `git checkout step-1` with unsaved edits | Use the full catch-up command below, which stashes first |
 | `CONFLICT` after `git stash pop` | Your edits clash with the finished code | You do not need to pop. The step branch already has the finished code. If you already popped, run `git reset --hard` to go back to the finished version (git keeps your stash when a pop conflicts), then `git stash drop` when you no longer need it. To keep a copy of your own attempt, run `cp agent/reason.py ~/my_reason.py` before catching up |
 
+### Look it up
+
+- [LangChain tools](https://docs.langchain.com/oss/python/langchain/tools), for TODO 1, writing the two `@tool` functions
+- [Tool calling and the tool loop](https://docs.langchain.com/oss/python/langchain/models#tool-calling), for TODO 3c
+- [Structured output](https://docs.langchain.com/oss/python/langchain/models#structured-output), for TODO 3d
+- [Pydantic fields](https://docs.pydantic.dev/latest/concepts/fields/), for TODO 2, the `CFPFit` schema
+
 ### Catch up
 
 ```bash
@@ -312,6 +319,11 @@ TODAY=2026-11-02 python run.py
 | `routed (apply_now=0 ...)` and every row says `skip` | `route_for` still returns `"skip"` | Finish step 3a. Check the thresholds in `agent/config.py` |
 | Live link checks are slow or fail | Conference wifi | Leave `CHECK_LINKS_LIVE=false`, which is the default |
 | Provider or git errors | Same as Exercise 1 | See the table in Exercise 1 |
+
+### Look it up
+
+- [Python datetime (`date.fromisoformat`)](https://docs.python.org/3/library/datetime.html), for TODO 1c, `deadline_open`
+- [Python urllib.parse (`urlparse`)](https://docs.python.org/3/library/urllib.parse.html), for TODO 1b, `link_works`
 
 ### Catch up
 
@@ -570,6 +582,11 @@ You can do the same through the API by putting your URL in `repo_url` in `POST /
 | `address already in use` when starting uvicorn | Another server is on port 8000 | Stop it with Ctrl+C, or run `uvicorn main:app --reload --port 8001` |
 | `ValidationError` for `Draft` | The model returned a field of the wrong type | Read the field name in the error. Check `Draft` matches the TODO |
 | Provider, key, rate limit or git errors | Same as Exercise 1 | See the table in Exercise 1 |
+
+### Look it up
+
+- [LangGraph human-in-the-loop (`interrupt`)](https://docs.langchain.com/oss/python/langgraph/human-in-the-loop), for TODO 2, the pause
+- [FastAPI first steps and the /docs page](https://fastapi.tiangolo.com/tutorial/first-steps/), for the API steps under "If you have time"
 
 ### Catch up
 
